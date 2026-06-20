@@ -37,6 +37,7 @@
       <x:String>System.Reflection</x:String>
       <x:String>System.Linq.Expressions</x:String>
       <x:String>UiPath.DataTableUtilities</x:String>
+      <x:String>System.Numerics</x:String>
     </sco:Collection>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
@@ -92,9 +93,10 @@
       <AssemblyReference>NPOI.Core</AssemblyReference>
       <AssemblyReference>System.Collections</AssemblyReference>
       <AssemblyReference>System.Collections.NonGeneric</AssemblyReference>
+      <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence DisplayName="FruitExample" sap:VirtualizedContainerService.HintSize="846,1336.6666666666667" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence DisplayName="FruitExample" sap:VirtualizedContainerService.HintSize="846,1852" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
       <Variable x:TypeArguments="sd:DataTable" Name="dt_inptData" />
     </Sequence.Variables>
@@ -103,17 +105,18 @@
         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
       </scg:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
-    <ueab:ExcelApplicationCard DisplayName="Use Excel File" sap:VirtualizedContainerService.HintSize="452,1314" sap2010:WorkflowViewState.IdRef="ExcelApplicationCard_1" ResizeWindow="None" WorkbookPath="uipath_linq_filter_example.xlsx">
+    <ueab:ExcelApplicationCard DisplayName="Use Excel File" sap:VirtualizedContainerService.HintSize="452,1829.3333333333333" sap2010:WorkflowViewState.IdRef="ExcelApplicationCard_1" ResizeWindow="None" WorkbookPath="uipath_linq_filter_example.xlsx">
       <ueab:ExcelApplicationCard.Body>
         <ActivityAction x:TypeArguments="ue:IWorkbookQuickHandle">
           <ActivityAction.Argument>
             <DelegateInArgument x:TypeArguments="ue:IWorkbookQuickHandle" Name="Excel" />
           </ActivityAction.Argument>
-          <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="450,1091.3333333333333" sap2010:WorkflowViewState.IdRef="Sequence_2">
+          <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="450,1606.6666666666667" sap2010:WorkflowViewState.IdRef="Sequence_2">
             <Sequence.Variables>
               <Variable x:TypeArguments="sd:DataTable" Name="dt_clone" />
               <Variable x:TypeArguments="sd:DataTable" Name="dt_sumColumn" />
               <Variable x:TypeArguments="x:String" Name="strText" />
+              <Variable x:TypeArguments="sd:DataTable" Name="st_sumSpecificrow" />
             </Sequence.Variables>
             <sap:WorkflowViewStateService.ViewState>
               <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -144,9 +147,28 @@
 ).CopyToDataTable()]</InArgument>
               </Assign.Value>
             </Assign>
+            <Assign DisplayName="Assign 2" sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_3">
+              <Assign.To>
+                <OutArgument x:TypeArguments="sd:DataTable">[st_sumSpecificrow]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="sd:DataTable" xml:space="preserve">[(From row In dt_inptData _
+    Let x = New Object() { _
+        row("Item").ToString, _
+        row("Quantity").ToString, _
+        If(row("Item").ToString.Contains("Orange"), _
+           (CInt(row("Price").ToString) + 50).ToString, _
+           row("Price").ToString) _
+    } _
+    Select dt_clone.Rows.Add(x) _
+).CopyToDataTable()]</InArgument>
+              </Assign.Value>
+            </Assign>
             <ui:OutputDataTable DataTable="[dt_sumColumn]" DisplayName="Output Data Table as Text" sap:VirtualizedContainerService.HintSize="416,114" sap2010:WorkflowViewState.IdRef="OutputDataTable_1" Text="[strText]" />
+            <ui:OutputDataTable DataTable="[st_sumSpecificrow]" DisplayName="Output Data Table as Text" sap:VirtualizedContainerService.HintSize="416,114" sap2010:WorkflowViewState.IdRef="OutputDataTable_2" Text="[strText]" />
             <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="LogMessage_1" Message="[strText]" />
-            <ueab:WriteRangeX Append="True" Destination="[Excel.Sheet(&quot;SumSheet&quot;)]" DisplayName="Write DataTable to Excel" sap:VirtualizedContainerService.HintSize="416,215.33333333333334" sap2010:WorkflowViewState.IdRef="WriteRangeX_2" IgnoreEmptySource="False" Source="[dt_sumColumn]" />
+            <ueab:WriteRangeX Append="True" Destination="[Excel.Sheet(&quot;SumSheet&quot;)]" DisplayName="Write DataTable to Excel" sap:VirtualizedContainerService.HintSize="416,224.66666666666666" sap2010:WorkflowViewState.IdRef="WriteRangeX_2" IgnoreEmptySource="False" Source="[dt_sumColumn]" />
+            <ueab:WriteRangeX Append="True" Destination="[Excel.Sheet(&quot;sumspecific&quot;)]" DisplayName="Write DataTable to Excel" sap:VirtualizedContainerService.HintSize="416,215.33333333333334" sap2010:WorkflowViewState.IdRef="WriteRangeX_3" IgnoreEmptySource="False" Source="[st_sumSpecificrow]" />
           </Sequence>
         </ActivityAction>
       </ueab:ExcelApplicationCard.Body>
