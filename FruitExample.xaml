@@ -38,6 +38,8 @@
       <x:String>System.Linq.Expressions</x:String>
       <x:String>UiPath.DataTableUtilities</x:String>
       <x:String>System.Numerics</x:String>
+      <x:String>DocumentFormat.OpenXml.Office2010.ExcelAc</x:String>
+      <x:String>DocumentFormat.OpenXml</x:String>
     </sco:Collection>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
@@ -94,9 +96,14 @@
       <AssemblyReference>System.Collections</AssemblyReference>
       <AssemblyReference>System.Collections.NonGeneric</AssemblyReference>
       <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
+      <AssemblyReference>System.Collections.Immutable</AssemblyReference>
+      <AssemblyReference>System.Linq.Parallel</AssemblyReference>
+      <AssemblyReference>System.Linq.Queryable</AssemblyReference>
+      <AssemblyReference>DocumentFormat.OpenXml</AssemblyReference>
+      <AssemblyReference>DocumentFormat.OpenXml.Framework</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence DisplayName="FruitExample" sap:VirtualizedContainerService.HintSize="846,1852" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence DisplayName="FruitExample" sap:VirtualizedContainerService.HintSize="846,2200.6666666666665" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
       <Variable x:TypeArguments="sd:DataTable" Name="dt_inptData" />
     </Sequence.Variables>
@@ -105,18 +112,22 @@
         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
       </scg:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
-    <ueab:ExcelApplicationCard DisplayName="Use Excel File" sap:VirtualizedContainerService.HintSize="452,1829.3333333333333" sap2010:WorkflowViewState.IdRef="ExcelApplicationCard_1" ResizeWindow="None" WorkbookPath="uipath_linq_filter_example.xlsx">
+    <ueab:ExcelApplicationCard DisplayName="Use Excel File" sap:VirtualizedContainerService.HintSize="452,2670.6666666666665" sap2010:WorkflowViewState.IdRef="ExcelApplicationCard_1" ResizeWindow="None" WorkbookPath="uipath_linq_filter_example.xlsx">
       <ueab:ExcelApplicationCard.Body>
         <ActivityAction x:TypeArguments="ue:IWorkbookQuickHandle">
           <ActivityAction.Argument>
             <DelegateInArgument x:TypeArguments="ue:IWorkbookQuickHandle" Name="Excel" />
           </ActivityAction.Argument>
-          <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="450,1606.6666666666667" sap2010:WorkflowViewState.IdRef="Sequence_2">
+          <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="450,2470.6666666666665" sap2010:WorkflowViewState.IdRef="Sequence_2">
             <Sequence.Variables>
               <Variable x:TypeArguments="sd:DataTable" Name="dt_clone" />
               <Variable x:TypeArguments="sd:DataTable" Name="dt_sumColumn" />
               <Variable x:TypeArguments="x:String" Name="strText" />
               <Variable x:TypeArguments="sd:DataTable" Name="st_sumSpecificrow" />
+              <Variable x:TypeArguments="sd:DataTable" Name="dt_inptDataFull" />
+              <Variable x:TypeArguments="sd:DataTable" Name="dt_cloneFull" />
+              <Variable x:TypeArguments="sd:DataTable" Name="dt_outAfterRemoveExtra" />
+              <Variable x:TypeArguments="x:String" Name="str_OutafterRemoveExtra" />
             </Sequence.Variables>
             <sap:WorkflowViewStateService.ViewState>
               <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -124,7 +135,8 @@
               </scg:Dictionary>
             </sap:WorkflowViewStateService.ViewState>
             <ueab:ReadRangeX DisplayName="Read Range" sap:VirtualizedContainerService.HintSize="416,172" sap2010:WorkflowViewState.IdRef="ReadRangeX_1" Range="[Excel.Sheet(&quot;Sheet1&quot;)]" SaveTo="[dt_inptData]" />
-            <Assign sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_2">
+            <ueab:ReadRangeX DisplayName="Read Range for Remove Extra Space Sheet" sap:VirtualizedContainerService.HintSize="416,172" sap2010:WorkflowViewState.IdRef="ReadRangeX_2" Range="[Excel.Sheet(&quot;RemoveExtraSpace&quot;)]" SaveTo="[dt_inptDataFull]" />
+            <Assign DisplayName="Assign clone of input data" sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_2">
               <Assign.To>
                 <OutArgument x:TypeArguments="sd:DataTable">[dt_clone]</OutArgument>
               </Assign.To>
@@ -132,7 +144,15 @@
                 <InArgument x:TypeArguments="sd:DataTable">[dt_inptData.Clone()]</InArgument>
               </Assign.Value>
             </Assign>
-            <Assign sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_1">
+            <Assign DisplayName="Assign clone of input data full" sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_5">
+              <Assign.To>
+                <OutArgument x:TypeArguments="sd:DataTable">[dt_cloneFull]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="sd:DataTable">[dt_inptDataFull.Clone()]</InArgument>
+              </Assign.Value>
+            </Assign>
+            <Assign DisplayName="Assign -&gt; to sum 50 in each row" sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_1">
               <Assign.To>
                 <OutArgument x:TypeArguments="sd:DataTable">[dt_sumColumn]</OutArgument>
               </Assign.To>
@@ -147,7 +167,7 @@
 ).CopyToDataTable()]</InArgument>
               </Assign.Value>
             </Assign>
-            <Assign DisplayName="Assign 2" sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_3">
+            <Assign DisplayName="Process updated the specific row" sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_3">
               <Assign.To>
                 <OutArgument x:TypeArguments="sd:DataTable">[st_sumSpecificrow]</OutArgument>
               </Assign.To>
@@ -164,11 +184,30 @@
 ).CopyToDataTable()]</InArgument>
               </Assign.Value>
             </Assign>
+            <Assign DisplayName="Process remove extrac space from the row" sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="Assign_4">
+              <Assign.To>
+                <OutArgument x:TypeArguments="sd:DataTable">[dt_outAfterRemoveExtra]</OutArgument>
+              </Assign.To>
+              <Assign.Value>
+                <InArgument x:TypeArguments="sd:DataTable" xml:space="preserve">[(From row In dt_inptDataFull.AsEnumerable _
+ Select dt_inptDataFull.Clone.Rows.Add(New Object() { _
+    row("Invoice Number").ToString, _
+    row("Vendor Tax ID").ToString, _
+    row("Invoice Item").ToString, _
+    If(row("Total").ToString.Contains(" "), _
+       row("Total").ToString.Split(" "c)(0), _
+       row("Total").ToString), _
+    row("Date").ToString _
+ })).CopyToDataTable()]</InArgument>
+              </Assign.Value>
+            </Assign>
             <ui:OutputDataTable DataTable="[dt_sumColumn]" DisplayName="Output Data Table as Text" sap:VirtualizedContainerService.HintSize="416,114" sap2010:WorkflowViewState.IdRef="OutputDataTable_1" Text="[strText]" />
             <ui:OutputDataTable DataTable="[st_sumSpecificrow]" DisplayName="Output Data Table as Text" sap:VirtualizedContainerService.HintSize="416,114" sap2010:WorkflowViewState.IdRef="OutputDataTable_2" Text="[strText]" />
+            <ui:OutputDataTable DataTable="[dt_outAfterRemoveExtra]" DisplayName="Output Data Table as Text" sap:VirtualizedContainerService.HintSize="416,114" sap2010:WorkflowViewState.IdRef="OutputDataTable_3" Text="[str_OutafterRemoveExtra]" />
             <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="416,176.66666666666666" sap2010:WorkflowViewState.IdRef="LogMessage_1" Message="[strText]" />
             <ueab:WriteRangeX Append="True" Destination="[Excel.Sheet(&quot;SumSheet&quot;)]" DisplayName="Write DataTable to Excel" sap:VirtualizedContainerService.HintSize="416,224.66666666666666" sap2010:WorkflowViewState.IdRef="WriteRangeX_2" IgnoreEmptySource="False" Source="[dt_sumColumn]" />
-            <ueab:WriteRangeX Append="True" Destination="[Excel.Sheet(&quot;sumspecific&quot;)]" DisplayName="Write DataTable to Excel" sap:VirtualizedContainerService.HintSize="416,215.33333333333334" sap2010:WorkflowViewState.IdRef="WriteRangeX_3" IgnoreEmptySource="False" Source="[st_sumSpecificrow]" />
+            <ueab:WriteRangeX Append="True" Destination="[Excel.Sheet(&quot;sumspecific&quot;)]" DisplayName="Write DataTable to Excel" sap:VirtualizedContainerService.HintSize="416,224.66666666666666" sap2010:WorkflowViewState.IdRef="WriteRangeX_3" IgnoreEmptySource="False" Source="[st_sumSpecificrow]" />
+            <ueab:WriteRangeX Append="True" Destination="[Excel.Sheet(&quot;RemoveExtraSpace&quot;)]" DisplayName="Write DataTable to Excel" sap:VirtualizedContainerService.HintSize="416,215.33333333333334" sap2010:WorkflowViewState.IdRef="WriteRangeX_4" IgnoreEmptySource="False" Source="[dt_outAfterRemoveExtra]" />
           </Sequence>
         </ActivityAction>
       </ueab:ExcelApplicationCard.Body>
